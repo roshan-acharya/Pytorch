@@ -6,10 +6,8 @@ from torchvision import transforms
 from PIL import Image
 
 st.title("🐱 Cat vs 🐟 Fish Classifier")
-import os
-print(os.path.exists("/tmp/model_weights.pth"))
 
-# Define the model architecture (must match exactly)
+
 class SimpleNet(nn.Module):
     def __init__(self):
         super(SimpleNet, self).__init__()
@@ -24,18 +22,17 @@ class SimpleNet(nn.Module):
         x = self.fc3(x)
         return x
 
-# Load model weights once and cache it
 @st.cache_resource
 def load_model():
     model = SimpleNet()
-    state_dict = torch.load("./Model/model_weights.pth", map_location="cpu")  # Load weights dictionary
-    model.load_state_dict(state_dict)  # Load weights into model
+    state_dict = torch.load("./Model/model_weights.pth", map_location="cpu")  
+    model.load_state_dict(state_dict)  
     model.eval()
     return model
 
 model = load_model()
 
-# Image preprocessing (same as training)
+
 transform = transforms.Compose([
     transforms.Resize((64, 64)),
     transforms.ToTensor(),
@@ -47,7 +44,7 @@ uploaded_file = st.file_uploader("Upload an image...", type=["jpg", "jpeg", "png
 
 if uploaded_file is not None:
     image = Image.open(uploaded_file).convert("RGB")
-    st.image(image, caption="Uploaded Image", use_column_width=True)
+    st.image(image, caption="Uploaded Image", use_container_width=True)
 
     input_tensor = transform(image).unsqueeze(0)
 
@@ -59,5 +56,5 @@ if uploaded_file is not None:
 
     class_names = ["Cat", "Fish"]
 
-    st.markdown(f"### 🧠 Prediction: **{class_names[predicted_idx]}**")
+    st.markdown(f"Prediction: **{class_names[predicted_idx]}**")
     st.markdown(f"Confidence: **{confidence:.2%}**")
